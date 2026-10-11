@@ -1,0 +1,6 @@
+# Keep clientSecret and refreshToken in a secret manager in production.
+- name: 'github:LJH-snow/dsh-tool-google-calendar'
+  config:
+    clientId: 'your-client-id.apps.googleusercontent.com'
+    clientSecret: 'your-client-secret'
+    refreshToken: 'your-refresh-token'
