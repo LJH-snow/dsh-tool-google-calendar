@@ -1,7 +1,7 @@
 {
   "name": "@libai168/dsh-tool-google-calendar",
   "description": "Google Calendar read-only tools for DeepSeek Harness: calendars, events, and bounded search",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "main": "lib/index.js",
   "types": "lib/types/index.d.ts",

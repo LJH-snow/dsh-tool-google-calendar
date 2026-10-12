@@ -1,6 +1,9 @@
 import { execFile } from 'node:child_process'
-import { readFile } from 'node:fs/promises'
+import { mkdtemp, readFile, rm, symlink } from 'node:fs/promises'
 import { promisify } from 'node:util'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 
 const execFileAsync = promisify(execFile)
@@ -68,5 +71,20 @@ describe('Google OAuth helper script', () => {
     expect(pkg.scripts['auth:calendar']).toBe('node scripts/auth-calendar.mjs')
     expect(pkg.bin['dsh-google-calendar-auth']).toBe('scripts/auth-calendar.mjs')
     expect(pkg.files).toContain('scripts')
+  })
+
+  it('runs when invoked through an npm-style symlinked bin path', async () => {
+    const tempDir = await mkdtemp(join(tmpdir(), 'dsh-google-calendar-auth-'))
+    const linkPath = join(tempDir, 'dsh-google-calendar-auth')
+    const targetPath = fileURLToPath(new URL('../scripts/auth-calendar.mjs', import.meta.url))
+    await symlink(targetPath, linkPath)
+
+    try {
+      const { stdout } = await execFileAsync(node, [linkPath, '--client-id', 'cid.apps.googleusercontent.com', '--redirect-uri', 'http://127.0.0.1:4100/oauth2callback', '--print-url'])
+      expect(stdout).toContain('Google authorization URL:')
+      expect(stdout).toContain('https://accounts.google.com/o/oauth2/v2/auth')
+    } finally {
+      await rm(tempDir, { recursive: true, force: true })
+    }
   })
 })

@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import { createHash, randomBytes } from 'node:crypto'
+import { realpathSync } from 'node:fs'
 import { createServer } from 'node:http'
 import { spawn } from 'node:child_process'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth'
 const TOKEN_URL = 'https://oauth2.googleapis.com/token'
@@ -345,7 +347,16 @@ export async function main(argv = process.argv.slice(2)) {
   printNextSteps(args, tokenResponse)
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+function isDirectInvocation() {
+  if (!process.argv[1]) return false
+  try {
+    return realpathSync(fileURLToPath(import.meta.url)) === realpathSync(process.argv[1])
+  } catch {
+    return false
+  }
+}
+
+if (isDirectInvocation()) {
   main().catch((error) => {
     console.error(`\n${error instanceof Error ? error.message : String(error)}`)
     process.exitCode = 1
