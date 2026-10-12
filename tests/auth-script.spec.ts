@@ -66,7 +66,7 @@ describe('Google OAuth helper script', () => {
     const raw = await readFile(new URL('../package.json', import.meta.url), 'utf8')
     const pkg = JSON.parse(raw) as { scripts: Record<string, string>, bin: Record<string, string>, files: string[] }
     expect(pkg.scripts['auth:calendar']).toBe('node scripts/auth-calendar.mjs')
-    expect(pkg.bin['dsh-google-calendar-auth']).toBe('./scripts/auth-calendar.mjs')
+    expect(pkg.bin['dsh-google-calendar-auth']).toBe('scripts/auth-calendar.mjs')
     expect(pkg.files).toContain('scripts')
   })
 })
